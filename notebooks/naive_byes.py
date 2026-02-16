@@ -6,9 +6,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 import warnings
 warnings.filterwarnings('ignore')
-
+df = pd.read_csv(r"encoded_data.csv")
 # Load the dataset
-df = pd.read_csv('house_prices_practice.csv')
+df = pd.read_csv(r"house-price-prediction\data\raw\house_prices_practice.csv")
 
 # Create price categories (Low, Medium, High) for classification
 df['PriceCategory'] = pd.cut(df['SalePrice'], 
@@ -34,7 +34,9 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 # Train Naive Bayes Classifier
-nb_model = GaussianNB()
+nb_model1 = GaussianNB()
+nb_model2 = GaussianNB()
+
 nb_model.fit(X_train_scaled, y_train)
 
 # Make predictions
