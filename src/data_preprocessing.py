@@ -4,6 +4,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
+import joblib
 
 
 # LOAD DATA
@@ -53,7 +54,13 @@ def handle_accidental_missing(data):
 
 # ENCODING
 def encode_data(data):
-
+    target = data['SalePrice']
+    data = data.drop(['SalePrice','Id'], axis=1)
+    default_values = data.median(numeric_only=True).to_dict()
+    for col in data.select_dtypes(include="object").columns: 
+        default_values[col] = data[col].mode()[0] 
+    joblib.dump(default_values, "models/default_values.joblib")
+    joblib.dump(data.columns.to_list(), "models/raw_columns.joblib")
     ordinal_features = [
     'LotShape',
     'Utilities',
@@ -233,15 +240,16 @@ def encode_data(data):
     )
 
     X = preprocessor.fit_transform(data)
-
+    joblib.dump(preprocessor, "models/preprocessor.joblib")
     feature_names = preprocessor.get_feature_names_out()
+    joblib.dump(preprocessor.get_feature_names_out(), "models/columns.joblib")
 
     encoded_df = pd.DataFrame(
         X,
         columns=feature_names,
         index=data.index
     )
-
+    encoded_df['SalePrice'] = target.values
     return encoded_df
 
 
